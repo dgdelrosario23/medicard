@@ -123,6 +123,7 @@ function downloadProposalPDF(){
   const plain=text=>text.replace(/₱/g,'PHP ').replace(/[–—]/g,'-').replace(/’/g,"'").replace(/·/g,' | ').replace(/×/g,'x');
   function textBlock(text,size=10,bold=false,gap=4){
     pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);
+    pdf.setTextColor(...(bold?[100,0,153]:[23,20,92]));
     const lines=pdf.splitTextToSize(plain(text),width);
     const lineHeight=size*0.46;
     for(const line of lines){if(y+lineHeight>bottom){pdf.addPage();y=18;}pdf.text(line,margin,y);y+=lineHeight;}
@@ -133,7 +134,7 @@ function downloadProposalPDF(){
     if(tag==='TABLE'){
       const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
       const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
-      pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak'},headStyles:{fillColor:[37,128,76]},rowPageBreak:'avoid'});
+      pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92]},headStyles:{fillColor:[100,0,153]},rowPageBreak:'avoid'});
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
