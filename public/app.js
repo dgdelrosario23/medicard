@@ -44,7 +44,7 @@ function state(mbl=Number($('mbl').value)){
   const validMembers=['principals','dependents'].every(id=>$(id).validity.valid&&Number.isInteger(Number($(id).value)))&&principals>0&&dependents>=0;
   const total=validRate&&validMembers?principalRate*principals+(dependents?dependentRate*dependents:0):null;
   const index=limits.indexOf(mbl);const room=rooms[index]+(access==='1'?(index===0?' w/o AHMC & CSMC':index===1?' w/o AHMC; w/ CSMC':' w/ AHMC & CSMC'):'');
-  const hospital=access==='1'?'With MMC, SLMC (Q.C. & Global), and TMC. '+(index===0?'Without AHMC & CSMC.':index===1?'Without AHMC; with CSMC.':'With AHMC & CSMC.'):'Without AHMC, CSMC, MMC, SLMC (Q.C. & Global), and TMC.';
+  const hospital=access==='1'?'With MMC, SLMC (Q.C. & Global City), and TMC. '+(index===0?'Without AHMC & CSMC.':index===1?'Without AHMC; with CSMC.':'With AHMC & CSMC.'):'Without AHMC, CSMC, MMC, SLMC (Q.C. & Global City), and TMC.';
   return {taxLabel,zeroRated,mbl,access,pec,principals,dependents,semi,principalRate,dependentRate,validRate,validMembers,total,room,hospital,ready:validRate&&validMembers};
 }
 function update(){const s=state();
