@@ -66,7 +66,9 @@ function add(tag,text,parent=$('proposal-output')){const el=document.createEleme
 $('generate').onclick=()=>{
   if(!$('proposal-form').reportValidity())return;const s=state();if(!s.ready)return;
   $('pdf-links').hidden=true;
-  $('proposal-output').replaceChildren();add('p','MEDICARD · GROUP HEALTHCARE');add('h1','SME Choice proposal');
+  $('proposal-output').replaceChildren();
+  const logo=document.createElement('img');logo.src=$('brand-logo').src;logo.alt='MediCard — An AIA Company';logo.className='proposal-logo';$('proposal-output').append(logo);
+  add('h1','SME Choice proposal');
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
   add('h2','Your selected coverage');add('p',`Maximum benefit limit: ${currency(s.mbl)} per illness per member per year\nRoom & board: ${s.room}\nHospital access: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
   add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
@@ -118,7 +120,8 @@ function downloadProposalPDF(){
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF({unit:'mm',format:'a4'});
   const margin=16,width=178,bottom=280;
-  let y=18;
+  pdf.addImage($('pdf-logo').src,'PNG',16,14,65,65*420/1517);
+  let y=43;
   // Built-in PDF fonts use PHP instead of the unsupported peso glyph.
   const plain=text=>text.replace(/₱/g,'PHP ').replace(/[–—]/g,'-').replace(/’/g,"'").replace(/·/g,' | ').replace(/×/g,'x');
   function textBlock(text,size=10,bold=false,gap=4){
