@@ -4,7 +4,7 @@ Requires Node.js 18 or newer. No package installation is needed.
 
 Run `npm start`, then use port 3000. Run `npm run check` for JavaScript syntax checks.
 
-The supplied 100% pre-existing condition rate sheet is bundled: 6 MBL tiers × 2 hospital access options × annual/semi-annual payment × principal/dependent member types (48 prices). No-PEC prices remain unavailable until supplied.
+The supplied 50% and 100% pre-existing condition rate sheets are bundled: 6 MBL tiers × 2 hospital access options × 2 PEC options × annual/semi-annual payment × principal/dependent member types (96 prices). The former No-PEC option has been replaced by 50% of MBL. Legacy browser edits to No-PEC rates are ignored rather than reused for the new coverage.
 
 Enter principal and dependent counts separately and select the payment mode. Semi-annual rates are per installment, with 2 installments shown for the yearly total. Room-and-board descriptions and AHMC/CSMC exclusions follow the supplied table.
 

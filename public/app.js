@@ -6,12 +6,16 @@ const supplied = {
   1:[[14554,17465,7714,9256],[18562,22274,9838,11805],[25556,30668,13545,16254],[32163,38595,17046,20455],[46266,55519,24521,29425],[53206,63847,28199,33839]],
   0:[[13231,15877,7012,8415],[16874,20249,8943,10732],[23233,27880,12313,14776],[29239,35086,15497,18596],[42060,50472,22292,26750],[48369,58043,25636,30763]]
 };
+const supplied50 = {
+  1:[[14099,16918,7472,8967],[17877,21453,9475,11370],[24311,29173,12885,15462],[29920,35904,15858,19029],[41811,50174,22160,26592],[50318,60381,26669,32002]],
+  0:[[12817,15380,6793,8151],[16252,19503,8614,10337],[22101,26521,11714,14056],[27200,32640,14416,17299],[38010,45612,20145,24174],[45743,54892,24244,29093]]
+};
 const rooms=['Ward (Open)','Semi-Private (Open)','Small Private (Open)','Large Private (Open)','Small Suite up to Plan 5000','Large Suite up to Plan 8000'];
 let saved={};try{saved=JSON.parse(localStorage.getItem('medicard-rates-v2'))||{};}catch{}
 const rates={};
-for(const access of [0,1]) limits.forEach((limit,i)=>{rates[`${limit}-${access}-1`]=[...supplied[access][i]];});
+for(const access of [0,1]) limits.forEach((limit,i)=>{rates[`${limit}-${access}-1`]=[...supplied[access][i]];rates[`${limit}-${access}-50`]=[...supplied50[access][i]];});
 if(saved.rates && typeof saved.rates==='object') for(const [key,row] of Object.entries(saved.rates)) {
-  if(/^\d+-[01]-[01]$/.test(key) && Array.isArray(row) && row.length===4) rates[key]=row.map(v=>typeof v==='number' && Number.isFinite(v) && v>=0 ? v : '');
+  if(/^\d+-[01]-(1|50)$/.test(key) && Array.isArray(row) && row.length===4) rates[key]=row.map(v=>typeof v==='number' && Number.isFinite(v) && v>=0 ? v : '');
 }
 $('tax').value='included';
 function renderRates(){
@@ -47,7 +51,7 @@ function update(){const s=state();
   $('summary-company').textContent=$('company').value.trim()||'Your team, covered.';
   $('sum-mbl').textContent=`${currency(s.mbl)} / illness / year`;
   $('sum-access').textContent=s.hospital;$('sum-room').textContent=s.room;
-  $('sum-pec').textContent=s.pec==='1'?'100% of MBL':'No coverage';
+  $('sum-pec').textContent=s.pec==='1'?'100% of MBL':'50% of MBL';
   $('sum-members').textContent=s.validMembers?`${s.principals} principal · ${s.dependents} dependent`:'—';
   $('total-label').textContent=s.semi?'Group premium per semi-annual installment':'Annual group premium';
   $('total').textContent=s.ready?currency(s.total):'—';
