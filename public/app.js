@@ -70,7 +70,7 @@ $('generate').onclick=()=>{
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
   add('h2','Your selected coverage');add('p',`Maximum benefit limit: ${currency(s.mbl)} per illness per member per year\nRoom & board: ${s.room}\nHospital access: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
   add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
-  add('h2','Included benefits');const ul=add('ul','');document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
+  add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
   add('h2','Pricing');add('p',`Payment mode: ${s.semi?'Semi-annual (2 installments per year)':'Annual'}\nPrincipal members: ${s.principals} × ${currency(s.principalRate)} = ${currency(s.principals*s.principalRate)}${s.dependents?`\nDependent members: ${s.dependents} × ${currency(s.dependentRate)} = ${currency(s.dependents*s.dependentRate)}`:''}`);
   add('p',`${s.semi?'Group premium per installment':'Annual group premium'}: ${currency(s.total)}`).className='quote-total';
   if(s.semi)add('p',`Total for 2 semi-annual installments: ${currency(s.total*2)} per year. Each installment uses the supplied semi-annual rate; it is not half the annual rate.`);
@@ -137,11 +137,12 @@ function downloadProposalPDF(){
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
+      if(tag==='H2')y+=7;
       if(y>250){pdf.addPage();y=18;}
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
     }
     if(tag==='P'){textBlock(element.textContent,element.classList.contains('quote-total')?14:10,element.classList.contains('quote-total')||element.classList.contains('budget-note'));return;}
-    if(tag==='UL'){const compact=element.classList.contains('hospital-reference');[...element.children].forEach(li=>textBlock('- '+li.textContent,10,false,compact?0.5:4));if(compact)y+=3;return;}
+    if(tag==='UL'){const compact=element.classList.contains('hospital-reference')||element.classList.contains('included-benefits');[...element.children].forEach(li=>textBlock('- '+li.textContent,10,false,compact?0.5:4));if(compact)y+=3;return;}
     [...element.children].forEach(render);
   }
   render($('proposal-output'));
