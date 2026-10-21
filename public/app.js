@@ -69,15 +69,15 @@ $('generate').onclick=()=>{
   $('proposal-output').replaceChildren();add('p','MEDICARD · GROUP HEALTHCARE');add('h1','SME Choice proposal');
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
   add('h2','Your selected coverage');add('p',`Maximum benefit limit: ${currency(s.mbl)} per illness per member per year\nRoom & board: ${s.room}\nHospital access: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
-  add('h3','Hospital reference');const hospitals=add('ul','');document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
+  add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   add('h2','Included benefits');const ul=add('ul','');document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
   add('h2','Pricing');add('p',`Payment mode: ${s.semi?'Semi-annual (2 installments per year)':'Annual'}\nPrincipal members: ${s.principals} × ${currency(s.principalRate)} = ${currency(s.principals*s.principalRate)}${s.dependents?`\nDependent members: ${s.dependents} × ${currency(s.dependentRate)} = ${currency(s.dependents*s.dependentRate)}`:''}`);
   add('p',`${s.semi?'Group premium per installment':'Annual group premium'}: ${currency(s.total)}`).className='quote-total';
   if(s.semi)add('p',`Total for 2 semi-annual installments: ${currency(s.total*2)} per year. Each installment uses the supplied semi-annual rate; it is not half the annual rate.`);
   add('p',`Tax treatment: ${s.taxLabel}.`);
+  add('p','Semi-annual and quarterly premium payment options are also available based on the number of enrollees.');
   if(s.zeroRated)add('p','Zero-rated per-member rates are calculated by dividing the VAT-inclusive rate by 1.12 and rounding to 2 decimal places before multiplying by member counts.');
   if($('notes').value.trim()){add('h2','Additional notes');add('p',$('notes').value.trim());}
-  add('p','Indicative proposal based on the supplied pricing table and any locally edited rates. Subject to MediCard confirmation, eligibility, exclusions, and the applicable contract. This proposal does not activate coverage.');
   const comparison=add('section','');comparison.className='mbl-comparison';
   add('h2','Compare MBL options',comparison);
   add('p',`Same hospital access option (${s.access==='1'?'with top hospitals':'without top hospitals'}), PEC coverage (${$('sum-pec').textContent}), member counts (${s.principals} principal; ${s.dependents} dependent), payment mode (${s.semi?'semi-annual':'annual'}), and tax treatment (${s.taxLabel}).`,comparison);
@@ -102,7 +102,6 @@ $('generate').onclick=()=>{
     add('td',option.ready?currency(option.total):'Not available',row);
     if(s.semi)add('td',option.ready?currency(option.total*2):'Not available',row);
   });
-  add('p',`Per-member prices are ${s.semi?'per semi-annual installment':'annual'}. AHMC and CSMC access follows the room-tier conditions shown above. Unavailable rates are not estimated.`,comparison);
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
   $('preview').showModal();
 };
@@ -116,12 +115,12 @@ function downloadProposalPDF(){
   let y=18;
   // Built-in PDF fonts use PHP instead of the unsupported peso glyph.
   const plain=text=>text.replace(/₱/g,'PHP ').replace(/[–—]/g,'-').replace(/’/g,"'").replace(/·/g,' | ').replace(/×/g,'x');
-  function textBlock(text,size=10,bold=false){
+  function textBlock(text,size=10,bold=false,gap=4){
     pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);
     const lines=pdf.splitTextToSize(plain(text),width);
     const lineHeight=size*0.46;
     for(const line of lines){if(y+lineHeight>bottom){pdf.addPage();y=18;}pdf.text(line,margin,y);y+=lineHeight;}
-    y+=4;
+    y+=gap;
   }
   function render(element){
     const tag=element.tagName;
@@ -136,7 +135,7 @@ function downloadProposalPDF(){
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
     }
     if(tag==='P'){textBlock(element.textContent,element.classList.contains('quote-total')?14:10,element.classList.contains('quote-total')||element.classList.contains('budget-note'));return;}
-    if(tag==='UL'){[...element.children].forEach(li=>textBlock('- '+li.textContent));return;}
+    if(tag==='UL'){const compact=element.classList.contains('hospital-reference');[...element.children].forEach(li=>textBlock('- '+li.textContent,10,false,compact?0.5:4));if(compact)y+=3;return;}
     [...element.children].forEach(render);
   }
   render($('proposal-output'));
