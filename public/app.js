@@ -102,7 +102,13 @@ $('generate').onclick=()=>{
     add('td',option.ready?currency(option.total):'Not available',row);
     if(s.semi)add('td',option.ready?currency(option.total*2):'Not available',row);
   });
+  add('p',"Room and board/MBL can be customized depending on employee's rank. All other optional benefits such as the area coverage, pre-existing condition limit, and hospital access must be applied uniformly.",comparison).className='customization-note';
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
+  const prepared=add('section','');prepared.className='prepared-by';
+  add('h3','Prepared by',prepared);
+  add('p','Darwin Del Rosario\nLicensed MediCard Account Officer\nAA0000000187',prepared);
+  add('h3','Get in touch:',prepared);
+  add('p','Mobile: 0921 682 1415\nEmail: dgdelrosario23@gmail.com',prepared);
   $('preview').showModal();
 };
 $('close-preview').onclick=()=>$('preview').close();$('print').onclick=()=>window.print();renderRates();update();
