@@ -1,0 +1,10 @@
+{
+  "name": "medicard-proposal-portal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node build.js && node server.js",
+    "check": "node --check build.js && node --check server.js && node --check public/app.js && node build.js",
+    "build": "node build.js"
+  }
+}
