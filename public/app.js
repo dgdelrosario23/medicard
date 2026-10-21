@@ -50,7 +50,7 @@ function state(mbl=Number($('mbl').value)){
 function update(){const s=state();
   $('summary-company').textContent=$('company').value.trim()||'Your team, covered.';
   $('sum-mbl').textContent=`${currency(s.mbl)} / illness / year`;
-  $('sum-access').textContent=s.hospital;$('sum-room').textContent=s.room;
+  $('sum-access').textContent=s.access==='1'?'Nationwide with top-5 hospitals.':'Nationwide without top-5 hospitals.';$('sum-room').textContent=s.room;
   $('sum-pec').textContent=s.pec==='1'?'100% of MBL':'50% of MBL';
   $('sum-members').textContent=s.validMembers?`${s.principals} principal · ${s.dependents} dependent`:'—';
   $('total-label').textContent=s.semi?'Group premium per semi-annual installment':'Annual group premium';
