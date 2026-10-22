@@ -44,7 +44,7 @@ function state(mbl=Number($('mbl').value),counts=null){
   const validMembers=Number.isInteger(principals)&&principals>0&&principals<=100000&&Number.isInteger(dependents)&&dependents>=0&&dependents<=100000;
   const total=validRate&&validMembers?principalRate*principals+(dependents?dependentRate*dependents:0):null;
   const index=limits.indexOf(mbl);const room=rooms[index]+(access==='1'?(index===0?' w/o AHMC & CSMC':index===1?' w/o AHMC; w/ CSMC':' w/ AHMC & CSMC'):'');
-  const hospital=access==='1'?'With MMC, SLMC (Q.C. & Global City), and TMC. '+(index===0?'Without AHMC & CSMC.':index===1?'Without AHMC; with CSMC.':'With AHMC & CSMC.'):'Without AHMC, CSMC, MMC, SLMC (Q.C. & Global City), and TMC.';
+  const hospital=access==='1'?'Nationwide with top-5 hospitals (MMC, SLMC Q.C. & Global City, TMC, AHMC, and CSMC)':'Nationwide without top-5 hospitals.';
   return {taxLabel,zeroRated,mbl,access,pec,principals,dependents,semi,principalRate,dependentRate,validRate,validMembers,total,room,hospital,ready:validRate&&validMembers};
 }
 function employeeGroups(){
@@ -86,7 +86,7 @@ $('generate').onclick=()=>{
   add('h1','SME Choice proposal');
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
   add('h2','Your selected coverage');
-  add('p',`Hospital access option: ${s.access==='1'?'Nationwide with top-5 hospitals':'Nationwide without top-5 hospitals'}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
+  add('p',`Hospital access option: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
   s.groups.forEach(g=>add('p',`${g.name}\nMaximum benefit limit: ${currency(g.mbl)} per illness per member per year\nRoom & board: ${g.room}\nHospital access: ${g.hospital}\nMembers: ${g.principals} principal; ${g.dependents} dependent`));
   add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
