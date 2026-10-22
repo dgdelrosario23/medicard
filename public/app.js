@@ -165,7 +165,7 @@ function downloadProposalPDF(){
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
     }
     if(tag==='P'){textBlock(element.textContent,element.classList.contains('quote-total')?14:10,element.classList.contains('quote-total')||element.classList.contains('budget-note'));return;}
-    if(tag==='UL'){const benefits=element.classList.contains('included-benefits');const compact=element.classList.contains('hospital-reference')||benefits;[...element.children].forEach(li=>textBlock('- '+li.textContent,benefits?9:10,false,benefits?0:compact?0.5:4));if(compact)y+=3;return;}
+    if(tag==='UL'){[...element.children].forEach(li=>textBlock('- '+li.textContent,10,false,0));y+=4;return;}
     [...element.children].forEach(render);
   }
   render($('proposal-output'));
