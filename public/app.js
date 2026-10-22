@@ -31,9 +31,9 @@ function renderRates(){
   });
 }
 function persist(){try{localStorage.setItem('medicard-rates-v2',JSON.stringify({rates}));}catch{alert('Rates could not be saved in this browser. Keep this page open or enable browser storage.');}update();}
-function state(mbl=Number($('mbl').value)){
+function state(mbl=Number($('mbl').value),counts=null){
   const access=document.querySelector('[name=access]:checked').value,pec=document.querySelector('[name=pec]:checked').value;
-  const principals=Number($('principals').value),dependents=Number($('dependents').value),semi=$('period').value==='semi';
+  const principals=counts?counts.principals:Number($('principals').value),dependents=counts?counts.dependents:Number($('dependents').value),semi=$('period').value==='semi';
   const row=rates[`${mbl}-${access}-${pec}`]||[];
   const zeroRated=$('tax').value==='zero';
   const adjusted=value=>typeof value==='number'&&Number.isFinite(value)?(zeroRated?Math.round((value/1.12+Number.EPSILON)*100)/100:value):value;
@@ -41,21 +41,36 @@ function state(mbl=Number($('mbl').value)){
   const taxLabel=zeroRated?'Zero-rated (0% VAT)':'VAT included (12%)';
   const valid=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
   const validRate=valid(principalRate)&&(dependents===0||valid(dependentRate));
-  const validMembers=['principals','dependents'].every(id=>$(id).validity.valid&&Number.isInteger(Number($(id).value)))&&principals>0&&dependents>=0;
+  const validMembers=Number.isInteger(principals)&&principals>0&&principals<=100000&&Number.isInteger(dependents)&&dependents>=0&&dependents<=100000;
   const total=validRate&&validMembers?principalRate*principals+(dependents?dependentRate*dependents:0):null;
   const index=limits.indexOf(mbl);const room=rooms[index]+(access==='1'?(index===0?' w/o AHMC & CSMC':index===1?' w/o AHMC; w/ CSMC':' w/ AHMC & CSMC'):'');
   const hospital=access==='1'?'With MMC, SLMC (Q.C. & Global City), and TMC. '+(index===0?'Without AHMC & CSMC.':index===1?'Without AHMC; with CSMC.':'With AHMC & CSMC.'):'Without AHMC, CSMC, MMC, SLMC (Q.C. & Global City), and TMC.';
   return {taxLabel,zeroRated,mbl,access,pec,principals,dependents,semi,principalRate,dependentRate,validRate,validMembers,total,room,hospital,ready:validRate&&validMembers};
 }
-function update(){const s=state();
+function employeeGroups(){
+  return [...document.querySelectorAll('.employee-group')].map((el,index)=>({name:el.querySelector('.group-name').value.trim()||`Employee group ${index+1}`, ...state(Number(el.querySelector('select').value),{principals:el.querySelector('input[type=number]').valueAsNumber,dependents:el.querySelectorAll('input[type=number]')[1].valueAsNumber})}));
+}
+function quoteState(){
+  const groups=employeeGroups(),first=groups[0];
+  return {...first,groups,principals:groups.reduce((n,g)=>n+g.principals,0),dependents:groups.reduce((n,g)=>n+g.dependents,0),validMembers:groups.every(g=>g.validMembers),validRate:groups.every(g=>g.validRate),ready:groups.every(g=>g.ready),total:groups.every(g=>g.ready)?groups.reduce((n,g)=>n+g.total,0):null};
+}
+$('add-group').onclick=()=>{
+  const group=document.querySelector('.employee-group').cloneNode(true);
+  group.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
+  group.querySelector('.group-name').value='';
+  const counts=group.querySelectorAll('input[type=number]');counts[0].value='1';counts[1].value='0';
+  const remove=document.createElement('button');remove.type='button';remove.className='remove-group';remove.textContent='Remove group';remove.onclick=()=>{group.remove();update();};group.append(remove);
+  $('employee-groups').append(group);update();group.querySelector('.group-name').focus();
+};
+function update(){const s=quoteState();
   $('summary-company').textContent=$('company').value.trim()||'Your team, covered.';
-  $('sum-mbl').textContent=`${currency(s.mbl)} / illness / year`;
-  $('sum-access').textContent=s.access==='1'?'Nationwide with top-5 hospitals.':'Nationwide without top-5 hospitals.';$('sum-room').textContent=s.room;
+  $('sum-mbl').textContent=s.groups.length===1?`${currency(s.mbl)} / illness / year`:s.groups.map(g=>`${g.name}: ${currency(g.mbl)}`).join(' · ');
+  $('sum-access').textContent=s.access==='1'?'Nationwide with top-5 hospitals.':'Nationwide without top-5 hospitals.';$('sum-room').textContent=s.groups.length===1?s.room:'By employee group (see proposal)';
   $('sum-pec').textContent=s.pec==='1'?'100% of MBL':'50% of MBL';
   $('sum-members').textContent=s.validMembers?`${s.principals} principal · ${s.dependents} dependent`:'—';
   $('total-label').textContent=s.semi?'Group premium per semi-annual installment':'Annual group premium';
   $('total').textContent=s.ready?currency(s.total):'—';
-  $('price-detail').textContent=s.ready?`${s.principals} × ${currency(s.principalRate)} principal${s.dependents?` + ${s.dependents} × ${currency(s.dependentRate)} dependent`:''}${s.semi?` · 2 installments = ${currency(s.total*2)} / year`:''}`:'No rate available for this selection';
+  $('price-detail').textContent=s.ready?s.groups.map(g=>`${g.name}: ${currency(g.total)}`).join(' · ')+(s.semi?` · 2 installments = ${currency(s.total*2)} / year`:''):'Complete each employee group to calculate pricing';
   $('rate-status').textContent=!s.validMembers?'Enter whole member counts: at least 1 principal and 0 or more dependents.':!s.validRate?'Rates for this selection have not been supplied. Add them in Manage rates.':s.taxLabel;
   $('generate').disabled=!s.ready;
 }
@@ -64,16 +79,19 @@ for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',rende
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
 $('generate').onclick=()=>{
-  if(!$('proposal-form').reportValidity())return;const s=state();if(!s.ready)return;
+  if(!$('proposal-form').reportValidity())return;const s=quoteState();if(!s.ready)return;
   $('pdf-links').hidden=true;
   $('proposal-output').replaceChildren();
   const logo=document.createElement('img');logo.src=$('brand-logo').src;logo.alt='MediCard — An AIA Company';logo.className='proposal-logo';$('proposal-output').append(logo);
   add('h1','SME Choice proposal');
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
-  add('h2','Your selected coverage');add('p',`Maximum benefit limit: ${currency(s.mbl)} per illness per member per year\nRoom & board: ${s.room}\nHospital access: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
+  add('h2','Your selected coverage');
+  add('p',`Hospital access option: ${s.access==='1'?'Nationwide with top-5 hospitals':'Nationwide without top-5 hospitals'}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
+  s.groups.forEach(g=>add('p',`${g.name}\nMaximum benefit limit: ${currency(g.mbl)} per illness per member per year\nRoom & board: ${g.room}\nHospital access: ${g.hospital}\nMembers: ${g.principals} principal; ${g.dependents} dependent`));
   add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
-  add('h2','Pricing');add('p',`Payment mode: ${s.semi?'Semi-annual (2 installments per year)':'Annual'}\nPrincipal members: ${s.principals} × ${currency(s.principalRate)} = ${currency(s.principals*s.principalRate)}${s.dependents?`\nDependent members: ${s.dependents} × ${currency(s.dependentRate)} = ${currency(s.dependents*s.dependentRate)}`:''}`);
+  add('h2','Pricing');add('p',`Payment mode: ${s.semi?'Semi-annual (2 installments per year)':'Annual'}`);
+  s.groups.forEach(g=>add('p',`${g.name} — ${currency(g.mbl)} MBL\nPrincipal members: ${g.principals} × ${currency(g.principalRate)} = ${currency(g.principals*g.principalRate)}${g.dependents?`\nDependent members: ${g.dependents} × ${currency(g.dependentRate)} = ${currency(g.dependents*g.dependentRate)}`:''}\nGroup subtotal: ${currency(g.total)}`));
   add('p',`${s.semi?'Group premium per installment':'Annual group premium'}: ${currency(s.total)}`).className='quote-total';
   if(s.semi)add('p',`Total for 2 semi-annual installments: ${currency(s.total*2)} per year. Each installment uses the supplied semi-annual rate; it is not half the annual rate.`);
   add('p',`Tax treatment: ${s.taxLabel}.`);
@@ -83,6 +101,7 @@ $('generate').onclick=()=>{
   const comparison=add('section','');comparison.className='mbl-comparison';
   add('h2','Compare MBL options',comparison);
   add('p',`Same hospital access option (${s.access==='1'?'with top hospitals':'without top hospitals'}), PEC coverage (${$('sum-pec').textContent}), member counts (${s.principals} principal; ${s.dependents} dependent), payment mode (${s.semi?'semi-annual':'annual'}), and tax treatment (${s.taxLabel}).`,comparison);
+  if(s.groups.length>1)add('p','For comparison, each row below applies one MBL to all members across the employee groups. Your selected proposal above retains the different MBLs and subtotals for each group.',comparison);
   const wrap=add('div','',comparison);wrap.className='table-scroll';
   const table=add('table','',wrap);table.className='comparison-table';
   add('caption','MBL and pricing comparison',table);
@@ -94,9 +113,9 @@ $('generate').onclick=()=>{
   headings.forEach(text=>add('th',text,header).scope='col');
   const body=add('tbody','',table);
   limits.forEach(limit=>{
-    const option=state(limit),row=add('tr','',body);
-    if(limit===s.mbl)row.className='selected-option';
-    const label=add('th',`${currency(limit)}${limit===s.mbl?' (selected)':''}`,row);label.scope='row';
+    const option=state(limit,{principals:s.principals,dependents:s.dependents}),row=add('tr','',body);
+    if(s.groups.length===1&&limit===s.mbl)row.className='selected-option';
+    const label=add('th',`${currency(limit)}${s.groups.length===1&&limit===s.mbl?' (selected)':''}`,row);label.scope='row';
     add('td',option.room,row);
     const display=rate=>typeof rate==='number'&&Number.isFinite(rate)?currency(rate):'Not available';
     add('td',display(option.principalRate),row);

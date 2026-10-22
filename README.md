@@ -19,3 +19,7 @@ The generated `public/index.html` bundles its JavaScript and CSS so pricing also
 The published site is generated into `docs/` by `npm run build`. In repository Settings → Pages, select **Deploy from a branch**, **main**, and **/docs**, then Save. The expected URL is https://dgdelrosario23.github.io/medicard/ . Future edits must run `npm run build` and commit the updated `docs/index.html` along with source changes.
 
 The public site includes the supplied rates. Browser edits are local to each device, and no customer proposals are uploaded or stored on a server.
+
+## Employee groups
+
+In Customize your coverage, assign an MBL and principal/dependent counts to each employee rank. Use Add another employee group for managers or other tiers; additional groups can be removed. Dependents follow their group’s MBL. Hospital access, PEC, payment mode, and VAT are shared. Proposals and PDFs list group coverage and subtotals plus the combined premium. For mixed MBL selections, the comparison table shows the alternative cost of assigning each listed MBL to all members.

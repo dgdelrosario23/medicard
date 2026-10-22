@@ -38,3 +38,5 @@ input:not([type=radio]),select,textarea{min-width:0;max-width:100%}
 #proposal-output h2{margin-top:48px}#proposal-output h3{margin-top:40px}#proposal-output .prepared-by h3:first-child{margin-top:32px}#proposal-output .included-benefits{line-height:1.15;margin-top:4px}#proposal-output .included-benefits li{margin:0}
 
 .brand{display:block;flex-shrink:0;line-height:1}.brand img{display:block;width:215px;height:auto}.brand small{margin-top:7px;text-align:center;letter-spacing:2px}#proposal-output .proposal-logo{display:block;width:240px;max-width:100%;height:auto;margin-bottom:24px}@media(max-width:480px){.brand img{width:165px}.brand small{font-size:8px;letter-spacing:1.5px}}
+
+.employee-group{border:1px solid #dad3e8;border-radius:10px;padding:18px;margin-bottom:14px;background:#faf8fd}.employee-group>label+label,.employee-group .fields{margin-top:16px}.remove-group{margin-top:14px;font-size:12px}#add-group{margin-top:4px}#sum-mbl{white-space:pre-line}#price-detail{overflow-wrap:anywhere}
