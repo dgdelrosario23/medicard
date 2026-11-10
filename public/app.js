@@ -99,6 +99,12 @@ function addMembershipEligibility(){
     'This product offers a single, uniform benefit package that applies consistently to all employees and their dependents within each account. Customization or variation in plan designs for different employee groups or individuals is allowed up to MBL with corresponding Room and Board plan only.',
     'There shall be no cancellation of dependent enrollment while the Principal Member is still actively enrolled.'
   ].forEach(text=>add('li',text,notes));
+  const guide=add('section','',section);guide.className='enrollment-guide';
+  [
+    ['Married Principal Member','Spouse must be enrolled first → eldest child → next child, and so on.'],
+    ['Single Principal Member','Parents must be enrolled first → eldest sibling → next sibling, and so on.'],
+    ['Single Parent Principal Member','Eldest child must be enrolled first → second child → third child, and so on.']
+  ].forEach(([title,description])=>{const item=add('section','',guide);add('h3',title,item);add('p',description,item);});
 }
 
 function addIncludedBenefits(s){
@@ -205,7 +211,7 @@ function downloadProposalPDF(){
   pdf.addImage($('pdf-logo').src,'PNG',16,14,65,65*420/1517);
   let y=43;
   // Built-in PDF fonts use PHP instead of the unsupported peso glyph.
-  const plain=text=>text.replace(/₱/g,'PHP ').replace(/[–—]/g,'-').replace(/’/g,"'").replace(/·/g,' | ').replace(/×/g,'x');
+  const plain=text=>text.replace(/→/g,'->').replace(/₱/g,'PHP ').replace(/[–—]/g,'-').replace(/’/g,"'").replace(/·/g,' | ').replace(/×/g,'x');
   function textBlock(text,size=10,bold=false,gap=4){
     pdf.setFont('helvetica',bold?'bold':'normal');pdf.setFontSize(size);
     pdf.setTextColor(...(bold?[100,0,153]:[23,20,92]));
