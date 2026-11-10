@@ -126,8 +126,8 @@ $('generate').onclick=()=>{
   });
   add('p',"Room and board/MBL can be customized depending on employee's rank. All other optional benefits such as the area coverage, pre-existing condition limit, and hospital access must be applied uniformly.",comparison).className='customization-note';
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
-  add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
+  add('h3','Hospital reference');add('p','List of top hospitals').className='hospital-subtext';const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   const prepared=add('section','');prepared.className='prepared-by';
   add('h3','Prepared by',prepared);
   add('p','Darwin Del Rosario\nLicensed MediCard Account Officer\nAA0000000187',prepared);

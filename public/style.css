@@ -42,3 +42,5 @@ input:not([type=radio]),select,textarea{min-width:0;max-width:100%}
 .employee-group{border:1px solid #dad3e8;border-radius:10px;padding:18px;margin-bottom:14px;background:#faf8fd}.employee-group>label+label,.employee-group .fields{margin-top:16px}.remove-group{margin-top:14px;font-size:12px}#add-group{margin-top:4px}#sum-mbl{white-space:pre-line}#price-detail{overflow-wrap:anywhere}
 
 #proposal-output .hospital-reference,#proposal-output .included-benefits{font-size:inherit;line-height:inherit;margin:6px 0 16px}#proposal-output .hospital-reference li,#proposal-output .included-benefits li{margin:0}
+
+#proposal-output .hospital-subtext{margin:4px 0 6px;color:#585074}
