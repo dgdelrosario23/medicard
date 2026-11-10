@@ -48,7 +48,7 @@ function state(mbl=Number($('mbl').value),counts=null){
   return {taxLabel,zeroRated,mbl,access,pec,principals,dependents,semi,principalRate,dependentRate,validRate,validMembers,total,room,hospital,ready:validRate&&validMembers};
 }
 function employeeGroups(){
-  return [...document.querySelectorAll('.employee-group')].map((el,index)=>({name:el.querySelector('.group-name').value.trim()||`Employee group ${index+1}`, ...state(Number(el.querySelector('select').value),{principals:el.querySelector('input[type=number]').valueAsNumber,dependents:el.querySelectorAll('input[type=number]')[1].valueAsNumber})}));
+  return [...document.querySelectorAll('.employee-group')].map((el,index)=>({name:el.querySelector('.group-name').value.trim()||'Employees', ...state(Number(el.querySelector('select').value),{principals:el.querySelector('input[type=number]').valueAsNumber,dependents:el.querySelectorAll('input[type=number]')[1].valueAsNumber})}));
 }
 function quoteState(){
   const groups=employeeGroups(),first=groups[0];
@@ -57,13 +57,13 @@ function quoteState(){
 $('add-group').onclick=()=>{
   const group=document.querySelector('.employee-group').cloneNode(true);
   group.querySelectorAll('[id]').forEach(el=>el.removeAttribute('id'));
-  group.querySelector('.group-name').value='';
+  group.querySelector('.group-name').value='Employees';
   const counts=group.querySelectorAll('input[type=number]');counts[0].value='1';counts[1].value='0';
   const remove=document.createElement('button');remove.type='button';remove.className='remove-group';remove.textContent='Remove group';remove.onclick=()=>{group.remove();update();};group.append(remove);
   $('employee-groups').append(group);update();group.querySelector('.group-name').focus();
 };
 function update(){const s=quoteState();
-  $('summary-company').textContent=$('company').value.trim()||'Your team, covered.';
+  $('summary-company').textContent=$('company').value.trim()||'ABC Company';
   $('sum-mbl').textContent=s.groups.length===1?`${currency(s.mbl)} / illness / year`:s.groups.map(g=>`${g.name}: ${currency(g.mbl)}`).join(' · ');
   $('sum-access').textContent=s.access==='1'?'Nationwide with top-5 hospitals.':'Nationwide without top-5 hospitals.';$('sum-room').textContent=s.groups.length===1?s.room:'By employee group (see proposal)';
   $('sum-pec').textContent=s.pec==='1'?'100% of MBL':'50% of MBL';
@@ -79,6 +79,9 @@ for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',rende
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
 $('generate').onclick=()=>{
+  for(const [id,value] of Object.entries({company:'ABC Company',contact:'Unknown',email:'name@gmail.com'}))if(!$(id).value.trim())$(id).value=value;
+  document.querySelectorAll('.group-name').forEach(input=>{if(!input.value.trim())input.value='Employees';});
+  update();
   if(!$('proposal-form').reportValidity())return;const s=quoteState();if(!s.ready)return;
   $('pdf-links').hidden=true;
   $('proposal-output').replaceChildren();
