@@ -91,8 +91,6 @@ $('generate').onclick=()=>{
   add('h2','Your selected coverage');
   add('p',`Hospital access option: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
   s.groups.forEach(g=>add('p',`${g.name}\nMaximum benefit limit: ${currency(g.mbl)} per illness per member per year\nRoom & board: ${g.room}\nHospital access: ${g.hospital}\nMembers: ${g.principals} principal; ${g.dependents} dependent`));
-  add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
-  add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
   add('h2','Pricing');add('p',`Payment mode: ${s.semi?'Semi-annual (2 installments per year)':'Annual'}`);
   s.groups.forEach(g=>add('p',`${g.name} — ${currency(g.mbl)} MBL\nPrincipal members: ${g.principals} × ${currency(g.principalRate)} = ${currency(g.principals*g.principalRate)}${g.dependents?`\nDependent members: ${g.dependents} × ${currency(g.dependentRate)} = ${currency(g.dependents*g.dependentRate)}`:''}\nGroup subtotal: ${currency(g.total)}`));
   add('p',`${s.semi?'Group premium per installment':'Annual group premium'}: ${currency(s.total)}`).className='quote-total';
@@ -128,6 +126,8 @@ $('generate').onclick=()=>{
   });
   add('p',"Room and board/MBL can be customized depending on employee's rank. All other optional benefits such as the area coverage, pre-existing condition limit, and hospital access must be applied uniformly.",comparison).className='customization-note';
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
+  add('h3','Hospital reference');const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
+  add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
   const prepared=add('section','');prepared.className='prepared-by';
   add('h3','Prepared by',prepared);
   add('p','Darwin Del Rosario\nLicensed MediCard Account Officer\nAA0000000187',prepared);
