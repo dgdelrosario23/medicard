@@ -635,7 +635,7 @@ function downloadProposalPDF(){
     if(tag==='TABLE'){
       const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
       const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
-      pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92]},headStyles:{fillColor:[100,0,153]},rowPageBreak:'avoid'});
+      pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92]},headStyles:{fillColor:[100,0,153],textColor:[255,255,255]},rowPageBreak:'avoid'});
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
