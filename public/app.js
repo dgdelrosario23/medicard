@@ -78,6 +78,42 @@ $('proposal-form').addEventListener('input',update);$('proposal-form').addEventL
 for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',renderRates);
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
+function addIncludedBenefits(s){
+  add('h2','Included benefits');
+  const section=add('section','');section.className='expanded-benefits';
+  function benefit(title,description,items=[],examples=[]){
+    const block=add('section','',section);block.className='benefit-detail';
+    add('h3',title,block);if(description)add('p',description,block);
+    if(items.length){const list=add('ul','',block);list.className='included-benefits';items.forEach(text=>add('li',text,list));}
+    if(examples.length){add('p','Examples:',block).className='examples-label';const list=add('ul','',block);list.className='included-benefits';examples.forEach(text=>add('li',text,list));}
+  }
+  benefit('A. Hospitalization Confinement Benefit',
+    'All medical treatment requiring hospital admission. The following hospitalization (In-Patient) services shall apply when MediCard physicians prescribe the hospitalization of MEMBERS in any MediCard Accredited Hospitals, based on your coverage.',
+    ['No deposit upon admission','Room and board according to plan','Services of specialists like anesthesiologists, internists, surgeons, etc.','X-ray and lab exams','Administered medicines','And more'],
+    ['Dengue requiring confinement','Pneumonia requiring hospitalization','Appendicitis requiring surgery','Severe infection requiring admission','Other covered illnesses requiring confinement']);
+  benefit('B. Emergency Care Services',
+    'Immediate medical treatment for an unexpected illness or injury requiring urgent attention.',
+    ["Doctor’s services",'Medicines used during treatment or for immediate relief','Oxygen and intravenous fluids','Dressings, plaster casts, and sutures','Laboratory, x-ray and other diagnostic examinations','Ambulance services','And more'],
+    ['Severe allergic reaction','Accidental injury','High fever with alarming symptoms','Severe abdominal pain','Difficulty breathing']);
+  benefit('C. Outpatient Care Services',
+    'Medical services that do not require hospital admission.',
+    ['Regular consultations and treatment','Treatment of minor injuries and surgery not requiring confinement','X-ray and laboratory examinations prescribed by a MediCard physician','Physical and speech therapy','And more'],
+    ['Consultation for fever','Consultation for cough and colds','Consultation for migraine','Laboratory tests requested by an accredited physician','X-ray or diagnostic procedures','Follow-up consultations']);
+  benefit('D. Preventive Healthcare Services',
+    'Healthcare services intended to monitor a member’s health and help detect potential health problems early.',
+    ['Annual Physical Examination (APE) at designated MediCard free-standing clinics or at the COMPANY premises through a MediCard Mobile Medical Team on a scheduled basis for a minimum of 100 Principal Members after having paid at least six (6) months of membership fee. APE shall include the following: Complete Blood Count, Urinalysis, Fecalysis, Chest X-ray, Electrocardiogram (for members 35 years old and above, or if prescribed), and Pap smear (for women 35 years old and above, or if prescribed).']);
+  benefit('E. Dental Care Services',
+    'Covers specified dental services through MediCard-accredited dental clinics/providers.',
+    ['Once a year oral prophylaxis','Consultations and oral examinations','Simple tooth extractions, except surgery for impacted or ankylosed tooth, etc.','Temporary fillings','Gum treatments for cases like inflammation or bleeding','Treatment of mouth lesions, wounds and burns','Adjustment of dentures','Pre and post-natal dental consultations']);
+  benefit('F. Pre-existing Conditions Coverage',
+    'Any illness, injury or any adverse medical condition shall be considered pre-existing if prior to the effectivity date of membership, the pathogenesis or onset of such illness, injury or adverse medical condition has started as determined by MediCard’s Medical Director or accredited physicians. The determination of the pre-existing condition shall not be limited to one (1) year from the effectivity date of membership. Depending on the company’s selected option:',
+    ['Up to 10% of MBL per illness per member per year','Up to 25% of MBL per illness per member per year','Up to 50% of MBL per illness per member per year','Up to 100% of MBL per illness per member per year']);
+  add('p',`Selected for this proposal: up to ${s.pec==='1'?'100%':'50%'} of MBL per illness per member per year. The other percentages above are reference options and are not included in this quotation.`,section).className='selected-pec-note';
+  benefit('G. 24/7 Call Center Services/Access','');
+  benefit('H. e-Corporate Data Admin Portal for your HR or Admin','',
+    ['On site APE scheduling','Benefits and Exclusions','Utilization reporting','Reimbursement Status/Details','Membership endorsement','ECU scheduling','Request for ID Replacement','List of Active Members','List of Resigned Members','List of Enrollees with Action Memo']);
+}
+
 $('generate').onclick=()=>{
   for(const [id,value] of Object.entries({company:'ABC Company',contact:'Unknown',email:'name@gmail.com'}))if(!$(id).value.trim())$(id).value=value;
   document.querySelectorAll('.group-name').forEach(input=>{if(!input.value.trim())input.value='Employees';});
@@ -126,7 +162,7 @@ $('generate').onclick=()=>{
   });
   add('p',"Room and board/MBL can be customized depending on employee's rank. All other optional benefits such as the area coverage, pre-existing condition limit, and hospital access must be applied uniformly.",comparison).className='customization-note';
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
-  add('h2','Included benefits');const ul=add('ul','');ul.className='included-benefits';document.querySelectorAll('.benefits li').forEach(li=>add('li',li.textContent,ul));
+  addIncludedBenefits(s);
   add('h3','Hospital reference');add('p','List of top hospitals').className='hospital-subtext';const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   const prepared=add('section','');prepared.className='prepared-by';
   add('h3','Prepared by',prepared);

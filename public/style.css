@@ -44,3 +44,5 @@ input:not([type=radio]),select,textarea{min-width:0;max-width:100%}
 #proposal-output .hospital-reference,#proposal-output .included-benefits{font-size:inherit;line-height:inherit;margin:6px 0 16px}#proposal-output .hospital-reference li,#proposal-output .included-benefits li{margin:0}
 
 #proposal-output .hospital-subtext{margin:4px 0 6px;color:#585074}
+
+#proposal-output .benefit-detail h3{margin-top:28px;font-size:17px}#proposal-output .examples-label{font-weight:600;margin-bottom:6px}#proposal-output .expanded-benefits .included-benefits{margin-top:6px}#proposal-output .selected-pec-note{background:#f0e9f8;padding:12px;border-radius:6px}@media print{.benefit-detail h3,.examples-label{break-after:avoid}}
