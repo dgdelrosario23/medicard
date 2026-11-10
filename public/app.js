@@ -78,6 +78,29 @@ $('proposal-form').addEventListener('input',update);$('proposal-form').addEventL
 for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',renderRates);
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
+function addMembershipEligibility(){
+  const section=add('section','');section.className='membership-eligibility';
+  add('h2','Membership Eligibility',section);
+  const wrap=add('div','',section);wrap.className='table-scroll';
+  const table=add('table','',wrap);table.className='eligibility-table';
+  const head=add('thead','',table),header=add('tr','',head);
+  add('th','Member Type',header).scope='col';const title=add('th','Eligibility',header);title.colSpan=2;title.scope='colgroup';
+  const body=add('tbody','',table);
+  const principal=add('tr','',body);add('td','Principal Member',principal);add('td','At least 18 years old up to age 60 and employed by the company.',principal).colSpan=2;
+  const married=add('tr','',body);add('td','Qualified Dependent Member',married).rowSpan=5;add('td','For Married Principal Members',married).rowSpan=2;add('td','Legal Spouse up to age 60',married);
+  add('td','Legitimate and/or legally adopted children 30 days old and up to 21 years of age who are not gainfully employed and unmarried',add('tr','',body));
+  const single=add('tr','',body);add('td','For Single Principal Members',single).rowSpan=2;add('td','Parents up to 60 years of age, unemployed and dependent on the Principal Member',single);
+  add('td','Brothers and sisters 30 days old and up to 21 years of age who are not gainfully employed and unmarried',add('tr','',body));
+  const parent=add('tr','',body);add('td','For Single Parent Principal Members',parent);add('td','Children 30 days old and up to 21 years of age who are not gainfully employed and unmarried',parent);
+  add('p','NOTES:',section).className='eligibility-notes-title';
+  const notes=add('ul','',section);notes.className='eligibility-notes';
+  [
+    'The choice of enrolling dependents must follow a hierarchy. This means that the spouse first must be enrolled followed by the eldest child, second child and so on for married personnel. Under single employees, the parents must be enrolled first followed by eldest brother/sister and so on.',
+    'This product offers a single, uniform benefit package that applies consistently to all employees and their dependents within each account. Customization or variation in plan designs for different employee groups or individuals is allowed up to MBL with corresponding Room and Board plan only.',
+    'There shall be no cancellation of dependent enrollment while the Principal Member is still actively enrolled.'
+  ].forEach(text=>add('li',text,notes));
+}
+
 function addIncludedBenefits(s){
   add('h2','Included benefits');
   const section=add('section','');section.className='expanded-benefits';
@@ -163,6 +186,7 @@ $('generate').onclick=()=>{
   add('p',"Room and board/MBL can be customized depending on employee's rank. All other optional benefits such as the area coverage, pre-existing condition limit, and hospital access must be applied uniformly.",comparison).className='customization-note';
   add('p',"Customized pricing is also available to match your budget. Please contact us to discuss options tailored to your company's needs.",comparison).className='budget-note';
   addIncludedBenefits(s);
+  addMembershipEligibility();
   add('h3','Hospital reference');add('p','List of top hospitals').className='hospital-subtext';const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
   const prepared=add('section','');prepared.className='prepared-by';
   add('h3','Prepared by',prepared);
@@ -193,13 +217,13 @@ function downloadProposalPDF(){
   function render(element){
     const tag=element.tagName;
     if(tag==='TABLE'){
-      const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
-      const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>plain(cell.textContent)));
+      const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
+      const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
       pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92]},headStyles:{fillColor:[100,0,153],textColor:[255,255,255]},rowPageBreak:'avoid'});
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
-      if(['Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Prepared by'].includes(element.textContent))y+=12;
+      if(['Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Membership Eligibility','Prepared by'].includes(element.textContent))y+=12;
       if(y>250){pdf.addPage();y=18;}
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
     }
