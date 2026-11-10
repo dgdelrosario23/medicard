@@ -225,7 +225,9 @@ function downloadProposalPDF(){
     if(tag==='TABLE'){
       const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
       const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
-      pdf.autoTable({head,body,startY:y,margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92]},headStyles:{fillColor:[100,0,153],textColor:[255,255,255]},rowPageBreak:'avoid'});
+      const eligibility=element.classList.contains('eligibility-table');
+      const borders=eligibility?{lineWidth:0.2,lineColor:[160,150,175]}:{};
+      pdf.autoTable({head,body,startY:y,theme:eligibility?'grid':'striped',margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92],...borders},headStyles:{fillColor:[100,0,153],textColor:[255,255,255]},rowPageBreak:'avoid'});
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
