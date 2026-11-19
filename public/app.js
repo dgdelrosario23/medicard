@@ -247,6 +247,9 @@ $('generate').onclick=()=>{
   addIncludedBenefits(s);
   addMembershipEligibility();
   add('h3','Hospital reference');add('p','List of top hospitals').className='hospital-subtext';const hospitals=add('ul','');hospitals.className='hospital-reference';document.querySelectorAll('#hospital-names li').forEach(li=>add('li',li.textContent,hospitals));
+  const providerSection=add('section','');providerSection.className='accredited-providers';
+  add('h2','Accredited Hospitals and Clinics',providerSection);
+  const providerLink=add('a','View accredited providers',providerSection);providerLink.href='https://www.medicardphils.com/accredited-providers/';providerLink.target='_blank';providerLink.rel='noopener noreferrer';providerLink.className='primary provider-button';
   addWhyMediCard();
   const prepared=add('section','');prepared.className='prepared-by';
   add('h3','Prepared by',prepared);
@@ -295,9 +298,16 @@ function downloadProposalPDF(){
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
-      if(['Why should you entrust your healthcare needs to MediCard?','Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Membership Eligibility','Prepared by'].includes(element.textContent))y+=12;
+      if(['Why should you entrust your healthcare needs to MediCard?','Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Accredited Hospitals and Clinics','Membership Eligibility','Prepared by'].includes(element.textContent))y+=12;
       if(y>250){pdf.addPage();y=18;}
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
+    }
+    if(tag==='A'){
+      if(y+12>bottom){pdf.addPage();y=18;}
+      pdf.setFont('helvetica','bold');pdf.setFontSize(10);pdf.setTextColor(100,0,153);
+      pdf.textWithLink(plain(element.textContent),margin,y,{url:element.href});y+=6;
+      pdf.setFont('helvetica','normal');pdf.setFontSize(9);
+      pdf.textWithLink(element.href,margin,y,{url:element.href});y+=10;return;
     }
     if(tag==='P'){textBlock(element.textContent,element.classList.contains('quote-total')?14:10,element.classList.contains('quote-total')||element.classList.contains('budget-note'));return;}
     if(tag==='UL'){[...element.children].forEach(li=>textBlock('- '+li.textContent,10,false,0));y+=4;return;}
