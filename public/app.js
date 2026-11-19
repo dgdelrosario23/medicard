@@ -78,6 +78,42 @@ $('proposal-form').addEventListener('input',update);$('proposal-form').addEventL
 for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',renderRates);
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
+// Transcribed from the clinic directory screenshots supplied by the user.
+const clinicDirectory=[
+ ['MediCard Alabang Clinic','3/F Festival Supermall, Filinvest Corporate City, Alabang, Muntinlupa City','(0998) 849-3117','appt.alabang@medicardphils.com','Mon–Sun 7am–8pm'],
+ ['MediCard Angeles Clinic','G/F Cibels Building, Blk. 28 Lot 58, Mc Arthur Highway corner Limasawa St., Salapungan, Angeles City, Pampanga','(0908) 810-3688','appt.angeles@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Cainta Clinic','G/F, Building 1, Sta. Lucia East Grand Mall, Marcos Highway cor. Felix Ave., Cainta, Rizal','(0998) 591-5201','appt.stalucia@medicardphils.com','Mon–Sun 7am–8pm'],
+ ['MediCard Calamba Clinic','Unit 1 G/F, Andenson Building, Brgy. Parian, National Highway, Calamba, Laguna','(0919) 082-8775','appt.calamba@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Cavite Clinic','G/F MGM Building, Anabu Kostal, Aguinaldo Highway, Anabu II-D, Imus, Cavite','(0919) 082-8779','appt.cavite@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Cebu Clinic','Units 204 and 704, FLB Corporate Center, Cebu Business Park, Mabolo, Archbishop Reyes Ave., Cebu City','(0919) 082-8781','appt.cebu@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Centris Clinic','Units D, E, F, G Cyberpod Two, Eton Centris, EDSA corner Quezon Ave., Quezon City','(0919) 082-8774','appt.centris@medicardphils.com','Mon–Sat 6:30am–9pm'],
+ ['MediCard Davao Clinic','Unit 1, 8B-8C, LSA Center, JP Laurel, Bajada, Brgy. P. Bangoy, Agdao, Davao City','(0998) 862-3317','appt.davao@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Fairview Clinic','Unit 31, E & F LF Building, Commonwealth Ave. corner Camaro St., Fairview, Quezon City','(0919) 082-8783','appt.fairview@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Iloilo Clinic','G/F Unit A20, Festive Walk Parade 1B, Iloilo Business Park, Mandurriao, Iloilo City','(0939) 928-8244','appt.iloilo@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Lifestyle Center','51 Paseo de Roxas Ave. cor. Sen. Gil Puyat Ave., Makati City','(0919) 082-8773','appt.mlc@medicardphils.com','Mon–Fri 6am–7pm; Sat 6am–5pm'],
+ ['MediCard Lipa Clinic','G/F RDC Plaza, JP Laurel Highway, Lipa City (in front of Lipa Medix Medical Center)','(0998) 963-2529','appt.lipa@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Makati Clinic','G/F RAM Plaza Legazpi, 145 Dela Rosa cor. Adelantado St., Makati City','(0908) 886-4723','appt.ram@medicardphils.com','Mon–Fri 6:30am–7pm; Sat 6:30am–5pm'],
+ ['MediCard McKinley Clinic','8/10 Building, Upper McKinley Road, McKinley Hill, Taguig City','(0919) 082-8780','appt.mckinley@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Ortigas Clinic','Unit 105 Parc Royale Condominium, Julia Vargas Ave., Ortigas Center, Pasig City','(0919) 082-8784','appt.ortigas@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Pasay Clinic','G/F Reach Building, Macapagal Boulevard, MOA Complex, Pasay City','(0939) 928-4676','appt.pasay@medicardphils.com','Mon–Sat 7am–5pm'],
+ ['MediCard Sta. Rosa Clinic','2/F Humana Wellness Center, Sta. Rosa-Tagaytay National Road, Sta. Rosa City, Laguna','(0919) 082-8776','appt.starosa@medicardphils.com','Mon–Fri 6:30am–6pm; Sat 6:30am–5pm'],
+ ['MediCard Uptown Bonifacio Clinic','LGF Uptown Mall Link, 9th Avenue cor. 36th St., Uptown Bonifacio, Taguig City','(0998) 849-3126','appt.uptown@medicardphils.com','Mon–Fri 6:30am–7pm; Sat 6:30am–5pm']
+];
+function addClinicDirectory(){
+ const section=add('section','');section.className='clinic-directory';
+ add('h2','Free-standing Clinics (FSCs)',section);
+ add('p','Please contact your chosen clinic before visiting to confirm operating hours, available services, and appointment requirements.',section);
+ const wrap=add('div','',section);wrap.className='table-scroll';
+ const table=add('table','',wrap);table.className='clinic-table';
+ const header=add('tr','',add('thead','',table));
+ ['Clinic','Address','Contact details','Operating hours'].forEach(text=>add('th',text,header).scope='col');
+ const body=add('tbody','',table);
+ clinicDirectory.forEach(([name,address,phone,email,hours])=>{
+  const row=add('tr','',body);add('td',name,row);add('td',address,row);add('td',`${phone}\n${email}`,row);add('td',hours,row);
+ });
+ add('p','Directory based on the supplied MediCard contact-page screenshots. Services vary by branch and remain subject to the selected plan. For updates: www.medicardphils.com/contact-us/',section).className='directory-source';
+}
+
 function addWhyMediCard(){
   const section=add('section','');section.className='why-medicard';
   add('h2','Why should you entrust your healthcare needs to MediCard?',section);
@@ -217,6 +253,7 @@ $('generate').onclick=()=>{
   add('p','Darwin Del Rosario\nLicensed MediCard Account Officer\nAA0000000187',prepared);
   add('h3','Get in touch:',prepared);
   add('p','Mobile: 0921 682 1415\nEmail: dgdelrosario23@gmail.com',prepared);
+  addClinicDirectory();
   const finalPage=add('section','');finalPage.className='trusted-brands-page';
   const brands=document.createElement('img');brands.src=$('trusted-brands-source').src;brands.alt='We’re also trusted by many of the country’s strong brands — corporate client logos from the MediCard corporate profile';brands.width=981;brands.height=760;finalPage.append(brands);
   $('preview').showModal();
@@ -242,6 +279,7 @@ function downloadProposalPDF(){
   }
   function render(element){
     const tag=element.tagName;
+    if(element.classList.contains('clinic-directory')){pdf.addPage();y=18;}
     if(element.classList.contains('trusted-brands-page')){
       pdf.addPage();
       const imageWidth=pdf.internal.pageSize.getWidth()-20;
@@ -251,7 +289,7 @@ function downloadProposalPDF(){
     if(tag==='TABLE'){
       const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
       const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
-      const eligibility=element.classList.contains('eligibility-table');
+      const eligibility=element.classList.contains('eligibility-table')||element.classList.contains('clinic-table');
       const borders=eligibility?{lineWidth:0.2,lineColor:[160,150,175]}:{};
       pdf.autoTable({head,body,startY:y,theme:eligibility?'grid':'striped',margin:{left:margin,right:margin,top:18,bottom:18},styles:{fontSize:8,cellPadding:2,overflow:'linebreak',textColor:[23,20,92],...borders},headStyles:{fillColor:[100,0,153],textColor:[255,255,255]},rowPageBreak:'avoid'});
       y=pdf.lastAutoTable.finalY+7;return;
