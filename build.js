@@ -3,6 +3,7 @@ const path = require('node:path');
 const read = name => fs.readFileSync(path.join(__dirname, name), 'utf8');
 // Keep the portal usable when its HTML is opened without a separate asset server.
 const html = read('src/index.html')
+  .replaceAll('__MEDICARD_TRUSTED_BRANDS__', 'data:image/jpeg;base64,' + fs.readFileSync(path.join(__dirname, 'public/assets/trusted-brands.jpg')).toString('base64'))
   .replaceAll('__MEDICARD_LOGO_SVG__', 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(__dirname, 'public/assets/medicard-logo.svg')).toString('base64'))
   .replaceAll('__MEDICARD_LOGO_PNG__', 'data:image/png;base64,' + fs.readFileSync(path.join(__dirname, 'public/assets/medicard-logo.png')).toString('base64'))
   .replace('<link rel="stylesheet" href="./style.css">', () => `<style>${read('public/style.css')}</style>`)

@@ -217,6 +217,8 @@ $('generate').onclick=()=>{
   add('p','Darwin Del Rosario\nLicensed MediCard Account Officer\nAA0000000187',prepared);
   add('h3','Get in touch:',prepared);
   add('p','Mobile: 0921 682 1415\nEmail: dgdelrosario23@gmail.com',prepared);
+  const finalPage=add('section','');finalPage.className='trusted-brands-page';
+  const brands=document.createElement('img');brands.src=$('trusted-brands-source').src;brands.alt='We’re also trusted by many of the country’s strong brands — corporate client logos from the MediCard corporate profile';brands.width=981;brands.height=760;finalPage.append(brands);
   $('preview').showModal();
 };
 $('close-preview').onclick=()=>$('preview').close();$('print').onclick=()=>window.print();renderRates();update();
@@ -240,6 +242,12 @@ function downloadProposalPDF(){
   }
   function render(element){
     const tag=element.tagName;
+    if(element.classList.contains('trusted-brands-page')){
+      pdf.addPage();
+      const imageWidth=pdf.internal.pageSize.getWidth()-20;
+      pdf.addImage($('trusted-brands-source').src,'JPEG',10,16,imageWidth,imageWidth*760/981);
+      return;
+    }
     if(tag==='TABLE'){
       const head=[...element.querySelectorAll('thead tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
       const body=[...element.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>({content:plain(cell.textContent),rowSpan:cell.rowSpan,colSpan:cell.colSpan})));
