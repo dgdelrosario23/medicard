@@ -81,7 +81,6 @@ function add(tag,text,parent=$('proposal-output')){const el=document.createEleme
 function addWhyMediCard(){
   const section=add('section','');section.className='why-medicard';
   add('h2','Why should you entrust your healthcare needs to MediCard?',section);
-  add('p','From the MediCard Corporate Profile (May 2023). Figures and corporate claims below reflect that publication date.',section).className='profile-source';
   const list=add('ul','',section);
   [
     'We are a leading HMO in the Philippines.',
