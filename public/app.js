@@ -78,6 +78,24 @@ $('proposal-form').addEventListener('input',update);$('proposal-form').addEventL
 for(const id of ['rate-access','rate-pec'])$(id).addEventListener('change',renderRates);
 $('rates-toggle').onclick=()=>{$('rates-panel').hidden=!$('rates-panel').hidden;};$('close-rates').onclick=()=>{$('rates-panel').hidden=true;};
 function add(tag,text,parent=$('proposal-output')){const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;}
+function addWhyMediCard(){
+  const section=add('section','');section.className='why-medicard';
+  add('h2','Why should you entrust your healthcare needs to MediCard?',section);
+  add('p','From the MediCard Corporate Profile (May 2023). Figures and corporate claims below reflect that publication date.',section).className='profile-source';
+  const list=add('ul','',section);
+  [
+    'We are a leading HMO in the Philippines.',
+    'We are a pioneer in the health maintenance industry.',
+    'We are the only HMO founded and managed by doctors.',
+    'We are one of the six founding members of the Association of Health Maintenance Organizations of the Philippines (AHMOPI).',
+    'We are ISO certified and are the first HMO awarded with this certification in the Asia Pacific Region.',
+    'We have an extensive network of accredited providers nationwide — over 58,000 accredited doctors and over 1,300 hospitals and clinics.',
+    'We have competent LIAISON OFFICERS who monitor confined patients daily to inform them of their coverage and benefits as MediCard members.',
+    'We are trusted by over 5,000 corporate clients.',
+    'We are consistently growing.'
+  ].forEach(text=>add('li',text,list));
+}
+
 function addMembershipEligibility(){
   const section=add('section','');section.className='membership-eligibility';
   add('h2','Membership Eligibility',section);
@@ -153,6 +171,7 @@ $('generate').onclick=()=>{
   const logo=document.createElement('img');logo.src=$('brand-logo').src;logo.alt='MediCard — An AIA Company';logo.className='proposal-logo';$('proposal-output').append(logo);
   add('h1','SME Choice proposal');
   add('p',`Prepared for ${$('company').value.trim()}\n${[$('contact').value,$('email').value].filter(Boolean).join(' · ')}\nDate: ${new Date().toLocaleDateString('en-PH',{timeZone:'Asia/Manila',year:'numeric',month:'long',day:'numeric'})}`);
+  addWhyMediCard();
   add('h2','Your selected coverage');
   add('p',`Hospital access option: ${s.hospital}\nPre-existing condition coverage: ${$('sum-pec').textContent}\nMembers: ${s.principals} principal; ${s.dependents} dependent`);
   s.groups.forEach(g=>add('p',`${g.name}\nMaximum benefit limit: ${currency(g.mbl)} per illness per member per year\nRoom & board: ${g.room}\nHospital access: ${g.hospital}\nMembers: ${g.principals} principal; ${g.dependents} dependent`));
@@ -231,7 +250,7 @@ function downloadProposalPDF(){
       y=pdf.lastAutoTable.finalY+7;return;
     }
     if(tag==='H1'||tag==='H2'||tag==='H3'){
-      if(['Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Membership Eligibility','Prepared by'].includes(element.textContent))y+=12;
+      if(['Why should you entrust your healthcare needs to MediCard?','Your selected coverage','Hospital reference','Included benefits','Pricing','Compare MBL options','Membership Eligibility','Prepared by'].includes(element.textContent))y+=12;
       if(y>250){pdf.addPage();y=18;}
       textBlock(element.textContent,tag==='H1'?22:tag==='H2'?14:11,true);return;
     }
